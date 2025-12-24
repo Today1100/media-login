@@ -1,69 +1,54 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Media Login</title>
   <style>
-    body {
-      background:#0f0f0f;
-      color:#ffffff;
-      font-family: Arial, sans-serif;
-      margin:0;
-    }
-    .box {
-      max-width:400px;
-      margin:40px auto;
-      padding:20px;
-    }
-    h2 {
-      text-align:center;
-      margin-bottom:25px;
-    }
-    label {
-      font-size:14px;
-      color:#ccc;
-    }
-    input {
-      width:100%;
-      padding:12px;
-      margin:8px 0 18px;
-      background:#1e1e1e;
-      border:none;
-      border-radius:6px;
-      color:white;
-    }
-    button {
-      width:100%;
-      padding:14px;
-      background:#d32f2f;
-      border:none;
-      border-radius:8px;
-      color:white;
-      font-size:16px;
-      font-weight:bold;
-    }
+    body{background:#0f0f0f;color:#fff;font-family:Arial,Helvetica,sans-serif;margin:0}
+    .container{max-width:420px;margin:40px auto;padding:20px}
+    h1{text-align:center;margin-bottom:30px;font-size:22px}
+    label{display:block;margin-bottom:6px;font-size:14px;color:#ccc}
+    input{width:100%;padding:12px;margin-bottom:16px;border-radius:6px;border:none;background:#1e1e1e;color:#fff;font-size:14px}
+    button{width:100%;padding:14px;background:#d32f2f;border:none;border-radius:8px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
+    button:hover{background:#b71c1c}
+    .msg{display:none;margin-top:14px;padding:10px;border-radius:8px;background:#1e1e1e;color:#9fe29f;text-align:center}
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Kanal zur Playlist hinzufügen</h1>
 
-<div class="box">
-  <h2>Kanal zur Playlist hinzufügen</h2>
+    <label>Name der Playlist</label>
+    <input type="text" id="name" placeholder="Meine Playlist">
 
-  <label>Name der Playlist</label>
-  <input type="text" placeholder="Meine Playlist">
+    <label>URL</label>
+    <input type="text" id="url" placeholder="http://example.com:8080">
 
-  <label>URL</label>
-  <input type="text" placeholder="http://example.com:8080">
+    <label>Nutzername</label>
+    <input type="text" id="user" placeholder="Benutzername">
 
-  <label>Nutzername</label>
-  <input type="text" placeholder="Benutzername">
+    <label>Passwort</label>
+    <input type="password" id="pass" placeholder="Passwort">
 
-  <label>Passwort</label>
-  <input type="password" placeholder="Passwort">
+    <button id="btn">Erstellen</button>
+    <div class="msg" id="msg">✅ Gespeichert</div>
+  </div>
 
-  <button>Erstellen</button>
-</div>
+  <script>
+    document.getElementById("btn").addEventListener("click", () => {
+      const name = document.getElementById("name").value.trim();
+      const url  = document.getElementById("url").value.trim();
+      const user = document.getElementById("user").value.trim();
+      const pass = document.getElementById("pass").value;
 
+      localStorage.setItem("playlist_name", name);
+      localStorage.setItem("portal_url", url);
+      localStorage.setItem("username", user);
+      localStorage.setItem("password", pass);
+
+      document.getElementById("msg").style.display = "block";
+    });
+  </script>
 </body>
 </html>
