@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Player</title>
+  <style>
+    body{margin:0;background:#0f0f0f;color:#fff;font-family:Arial,Helvetica,sans-serif}
+    .wrap{max-width:900px;margin:20px auto;padding:16px}
+    .card{background:#1a1a1a;border-radius:10px;padding:14px;margin:12px 0}
+    .muted{color:#bdbdbd;font-size:13px}
+    button{padding:10px 12px;border:0;border-radius:8px;background:#d32f2f;color:#fff;font-weight:700;cursor:pointer}
+    input{width:100%;padding:10px;border-radius:8px;border:0;background:#242424;color:#fff;margin:8px 0}
+    a{color:#7ab7ff}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .row > *{flex:1}
+    .list{margin-top:10px}
+    .item{padding:10px;border-bottom:1px solid #2b2b2b}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>Inhalte laden</h2>
+
+    <div class="card">
+      <div class="muted">Gespeicherte Zugangsdaten</div>
+      <div id="saved"></div>
+      <div class="row" style="margin-top:10px">
+        <button id="loadCats">Live-Kategorien laden</button>
+        <button id="loadCh">Live-Channels laden</button>
+      </div>
+      <div id="status" class="muted" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <div class="muted">Ergebnis</div>
+      <div id="out" class="list"></div>
+    </div>
+  </div>
+
+<script>
+  const name = localStorage.getItem("playlist_name") || "";
+  const portal = (localStorage.getItem("portal_url") || "").trim();
+  const user = localStorage.getItem("username") || "";
+  const pass = localStorage.getItem("password") || "";
+
+  const savedEl = document.getElementById("saved");
+  const statusEl = document.getElementById("status");
+  const outEl = document.getElementById("out");
+
+  function showSaved(){
+    savedEl.innerHTML = `
+      <div><b>Name:</b> ${escapeHtml(name)}</div>
+      <div><b>Portal:</b> ${escapeHtml(portal)}</div>
+      <div><b>User:</b> ${escapeHtml(user)}</div>
+      <div><b>Pass:</b> ${pass ? "********" : ""}</div>
+      <div class="muted" style="margin-top:8px">
+        Hinweis: Viele Anbieter blockieren Aufrufe aus dem Browser/WebView (CORS). Dann braucht man einen eigenen Backend/Proxy.
+      </div>
+    `;
+  }
+
+  function escapeHtml(s){return (s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+  function buildApi(action){
+    // Xtream API: http(s)://domain:port/player_api.php?username=...&password=...&action=...
+    // Manche nutzen "portal" ohne /; wir hängen es sauber an:
+    const base = portal.replace(/\/+$/,'');
+    return `${base}/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&action=${action}`;
+  }
+
+  async function fetchJson(url){
+    statusEl.textContent = "Lade: " + url;
+    const r = await fetch(url, { method:"GET" });
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    return await r.json();
+  }
+
+  function renderList(arr, keyName){
+    outEl.innerHTML = "";
+    if(!Array.isArray(arr)){ outEl.innerHTML = `<div class="item">Keine Liste erhalten.</div>`; return; }
+    if(arr.length === 0){ outEl.innerHTML = `<div class="item">Leer.</div>`; return; }
+
+    for(const x of arr.slice(0,200)){
+      const t = x[keyName] || x.name || x.category_name || x.stream_name || JSON.stringify(x);
+      outEl.innerHTML += `<div class="item">${escapeHtml(String(t))}</div>`;
+    }
+  }
+
+  document.getElementById("loadCats").addEventListener("click", async () => {
+    outEl.innerHTML = "";
+    try{
+      const url = buildApi("get_live_categories");
+      const data = await fetchJson(url);
+      statusEl.textContent = "OK: Kategorien geladen";
+      renderList(data, "category_name");
+    }catch(e){
+      statusEl.textContent = "Fehler: " + e.message + " (sehr oft CORS/HTTPS/Serverblock)";
+      outEl.innerHTML = `<div class="item">Wenn das hier fehlschlägt, braucht die App einen eigenen Proxy/Backend oder echte Android-Code-App (ExoPlayer).</div>`;
+    }
+  });
+
+  document.getElementById("loadCh").addEventListener("click", async () => {
+    outEl.innerHTML = "";
+    try{
+      const url = buildApi("get_live_streams");
+      const data = await fetchJson(url);
+      statusEl.textContent = "OK: Channels geladen";
+      renderList(data, "name");
+    }catch(e){
+      statusEl.textContent = "Fehler: " + e.message + " (sehr oft CORS/HTTPS/Serverblock)";
+      outEl.innerHTML = `<div class="item">Wenn das hier fehlschlägt, braucht die App einen eigenen Proxy/Backend oder echte Android-Code-App (ExoPlayer).</div>`;
+    }
+  });
+
+  showSaved();
+</script>
+</body>
+</html>
