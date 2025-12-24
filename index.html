@@ -1,46 +1,105 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Media Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    body{background:#0f0f0f;color:#fff;font-family:Arial,Helvetica,sans-serif;margin:0}
-    .container{max-width:420px;margin:40px auto;padding:20px}
-    h1{text-align:center;margin-bottom:30px;font-size:22px}
-    label{display:block;margin-bottom:6px;font-size:14px;color:#ccc}
-    input{width:100%;padding:12px;margin-bottom:16px;border-radius:6px;border:none;background:#1e1e1e;color:#fff;font-size:14px}
-    button{width:100%;padding:14px;background:#d32f2f;border:none;border-radius:8px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
-    button:hover{background:#b71c1c}
-    .msg{display:none;margin-top:14px;padding:10px;border-radius:8px;background:#1e1e1e;color:#9fe29f;text-align:center}
+    body {
+      margin: 0;
+      background: #0f0f0f;
+      color: #ffffff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-size: 14px;
+      color: #cccccc;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #1f1f1f;
+      color: #ffffff;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 14px;
+      background: #d32f2f;
+      border: none;
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .msg {
+      display: none;
+      margin-top: 15px;
+      padding: 10px;
+      text-align: center;
+      background: #1b5e20;
+      border-radius: 8px;
+      color: #a5d6a7;
+      font-weight: bold;
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Kanal zur Playlist hinzufügen</h1>
 
     <label>Name der Playlist</label>
-    <input type="text" id="name" placeholder="Meine Playlist">
+    <input type="text" id="playlist_name" placeholder="Meine Playlist">
 
     <label>URL</label>
-    <input type="text" id="url" placeholder="http://example.com:8080">
+    <input type="text" id="portal_url" placeholder="http://example.com:8080">
 
     <label>Nutzername</label>
-    <input type="text" id="user" placeholder="Benutzername">
+    <input type="text" id="username" placeholder="Benutzername">
 
     <label>Passwort</label>
-    <input type="password" id="pass" placeholder="Passwort">
+    <input type="password" id="password" placeholder="Passwort">
 
-    <button id="btn">Erstellen</button>
-    <div class="msg" id="msg">✅ Gespeichert</div>
+    <button onclick="saveLogin()">Erstellen</button>
+
+    <div class="msg" id="msg">✔ Gespeichert</div>
   </div>
 
   <script>
-    document.getElementById("btn").addEventListener("click", () => {
-      const name = document.getElementById("name").value.trim();
-      const url  = document.getElementById("url").value.trim();
-      const user = document.getElementById("user").value.trim();
-      const pass = document.getElementById("pass").value;
+    function saveLogin() {
+      const name = document.getElementById("playlist_name").value.trim();
+      const url  = document.getElementById("portal_url").value.trim();
+      const user = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value.trim();
+
+      if (!url || !user || !pass) {
+        alert("Bitte alle Felder ausfüllen");
+        return;
+      }
 
       localStorage.setItem("playlist_name", name);
       localStorage.setItem("portal_url", url);
@@ -48,7 +107,12 @@
       localStorage.setItem("password", pass);
 
       document.getElementById("msg").style.display = "block";
-    });
+
+      // 👉 automatische Weiterleitung
+      setTimeout(() => {
+        window.location.href = "player.html";
+      }, 400);
+    }
   </script>
 </body>
 </html>
